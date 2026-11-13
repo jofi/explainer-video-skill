@@ -77,10 +77,11 @@ def request(sb, i, model):
     refuses them. Keep the ElevenLabs order as it is, because its hash is the stored voice_key.
     """
     b = sb["beats"][i]  # storyboard is the source of truth
-    text = f"[{b['tag']}] {b['line']}" if b.get("tag") else b["line"]
-    cmd = [text, "--voice", sb["voices"][b["speaker"]]["voice_id"], "--model", model]
+    cmd = [b["line"], "--voice", sb["voices"][b["speaker"]]["voice_id"], "--model", model]
     if not model.startswith("elevenlabs-"):
         return cmd
+    if model == "elevenlabs-v4" and b.get("tag"):
+        cmd[0] = f"[{b['tag']}] {b['line']}"
     cmd += ["--language", sb.get("language", "en")]
     if model == "elevenlabs-v4":  # an expressive model needs its knobs set, or the line sounds flat
         knobs = sb.get("voice_settings", {})

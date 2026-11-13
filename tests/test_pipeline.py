@@ -139,6 +139,9 @@ class TestVoiceCache(Project):
         sb = json.loads((self.tmp / "storyboard.json").read_text())
         self.assertEqual(sb["beats"][0]["line"], "Hello there.")
         self.assertEqual(sb["beats"][0]["tag"], "warmly")
+        voices = load("regen-voices.py")
+        self.assertEqual(voices.request(self.sb, 0, "edge-tts")[0], "Hello there.")
+        self.assertEqual(voices.request(self.sb, 0, "elevenlabs-v4")[0], "[warmly] Hello there.")
 
     def test_unknown_fresh_target_is_an_error(self):
         r = sh(["python3", str(SCRIPTS / "regen-voices.py"), "edge-tts", "--fresh", "nope"],
